@@ -1,0 +1,6 @@
+@rwaspnet5_HostAddress = http://localhost:5125
+
+GET {{rwaspnet5_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
