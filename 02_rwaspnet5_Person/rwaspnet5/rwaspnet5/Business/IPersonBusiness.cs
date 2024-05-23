@@ -1,8 +1,8 @@
 ﻿using rwaspnet5.Model;
 
-namespace rwaspnet5.Services
+namespace rwaspnet5.Business
 {
-    public interface IPersonService
+    public interface IPersonBusiness
     {
         Person Create(Person person);
         Person FindByID(long id);

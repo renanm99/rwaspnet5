@@ -3,20 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using rwaspnet5.Model;
 using rwaspnet5.Model.Context;
 
-namespace rwaspnet5.Services.Implementations
+namespace rwaspnet5.Repository.Implementations
 {
-    public class PersonServiceImplementation : IPersonService
+    public class PersonRepositoryImplementation : IPersonRepository
     {
         private SQLContext _context;
 
-        public PersonServiceImplementation(SQLContext context)
+        public PersonRepositoryImplementation(SQLContext context)
         {
             _context = context;
         }
 
         public List<Person> FindAll()
         {
-            return _context.Persons.ToList();
+            return _context.Persons.OrderByDescending(x => x.Id).ToList();
         }
 
         public Person FindByID(long id)
@@ -28,7 +28,8 @@ namespace rwaspnet5.Services.Implementations
         {
             try
             {
-                _context.Add(person);
+                _context.Persons.Add(person);
+                //_context.Add(person);
                 _context.SaveChanges();
 
             }
@@ -37,23 +38,9 @@ namespace rwaspnet5.Services.Implementations
             return person;
         }
 
-        public void Delete(long id)
-        {
-            var result = _context.Persons.SingleOrDefault(x => x.Id == id);
-            if (result != null)
-            {
-                try
-                {
-                    _context.Persons.Remove(result);
-                    _context.SaveChanges();
-                }
-                catch (Exception) { throw; }
-            }
-        }
-
         public Person Update(Person person)
         {
-            if (!Exists(person.Id)) return new Person();
+            if (!Exists(person.Id)) return null;
 
             var result = _context.Persons.SingleOrDefault(x => x.Id == person.Id);
 
@@ -74,21 +61,23 @@ namespace rwaspnet5.Services.Implementations
             return person;
         }
 
-        private bool Exists(long id)
+        public void Delete(long id)
         {
-            return _context.Persons.Any(x => x.Id == id);
+            var result = _context.Persons.SingleOrDefault(x => x.Id == id);
+            if (result != null)
+            {
+                try
+                {
+                    _context.Persons.Remove(result);
+                    _context.SaveChanges();
+                }
+                catch (Exception) { throw; }
+            }
         }
 
-        private Person MockPerson(int i)
+        public bool Exists(long id)
         {
-            return new Person
-            {
-                Id = 1,
-                FirstName = "Person Name" + i,
-                LastName = "Person Lastname" + i,
-                Address = "Some Address" + i,
-                Gender = "Male"
-            };
+            return _context.Persons.Any(x => x.Id == id);
         }
     }
 }
