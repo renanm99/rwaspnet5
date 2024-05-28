@@ -51,7 +51,7 @@ namespace rwaspnet5.Repository.Generic
                     _dbSet.Entry(result).CurrentValues.SetValues(item);
                     _context.SaveChanges();
 
-                    return item;
+                    return result;
                 }
                 catch (Exception) { throw; }
 

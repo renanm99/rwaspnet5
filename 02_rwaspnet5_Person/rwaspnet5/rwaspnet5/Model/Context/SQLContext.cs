@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using rwaspnet5.Data.VO;
 using rwaspnet5.Model.Base;
 using rwaspnet5.Repository.Generic;
 

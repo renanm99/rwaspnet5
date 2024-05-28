@@ -1,7 +1,8 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using rwaspnet5.Model;
 using rwaspnet5.Business;
+using rwaspnet5.Data.VO;
+using rwaspnet5.Hypermedia.Filters;
 
 namespace rwaspnet5.Controllers
 {
@@ -21,12 +22,14 @@ namespace rwaspnet5.Controllers
         }
 
         [HttpGet]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Get()
         {
             return Ok(_personBusiness.FindAll());
         } 
 
         [HttpGet("{id}")]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Get(long id)
         {
             var person = _personBusiness.FindByID(id);
@@ -35,7 +38,8 @@ namespace rwaspnet5.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Person person)
+        [TypeFilter(typeof(HyperMediaFilter))]
+        public IActionResult Create([FromBody] PersonVO person)
         {
 
             if (person == null) return BadRequest();
@@ -43,7 +47,8 @@ namespace rwaspnet5.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update([FromBody] Person person)
+        [TypeFilter(typeof(HyperMediaFilter))]
+        public IActionResult Update([FromBody] PersonVO person)
         {
 
             if (person == null) return BadRequest();

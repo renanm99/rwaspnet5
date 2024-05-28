@@ -7,6 +7,11 @@ using Serilog;
 using EvolveDb;
 using Microsoft.Data.SqlClient;
 using rwaspnet5.Repository.Generic;
+using rwaspnet5.Hypermedia.Filters;
+using rwaspnet5.Hypermedia.Enricher;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Rewrite;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +28,40 @@ if (builder.Environment.IsDevelopment())
     MigrateDatabase(connectionString);
 }
 
+builder.Services.AddMvc(options =>
+{
+    options.RespectBrowserAcceptHeader = true;
+    options.FormatterMappings.SetMediaTypeMappingForFormat("xml", "application/xml");
+    options.FormatterMappings.SetMediaTypeMappingForFormat("json", "application/json");
+}
+).AddXmlSerializerFormatters();
+
+var filterOptions = new HyperMediaFiltersOptions();
+filterOptions.ContentResponseEnricherList.Add(new PersonEnricher());
+filterOptions.ContentResponseEnricherList.Add(new BookEnricher());
+
+builder.Services.AddSingleton(filterOptions);
+
 // API Versioning
 builder.Services.AddApiVersioning();
+
+//Swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1",
+    new OpenApiInfo
+    {
+        Title = "REST API's from 0 to Azure with ASP.NET Core 5 and Docker",
+        Version = "v1",
+        Description = "API RESTFul developed in course 'rwaspnet5'",
+        Contact = new OpenApiContact
+        {
+            Name = "Renan Machado",
+            Url = new Uri("https://www.linkedin.com/in/renanoliveiram/")
+        }
+    }
+    );
+});
 
 // Dependency Injection
 builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
@@ -39,9 +76,25 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+//Use Swagger
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json"
+    , "REST API's from 0 to Azure with ASP.NET Core 5 and Docker");
+});
+
+var option = new RewriteOptions();
+option.AddRedirect("^$", "swagger");
+app.UseRewriter(option);
+
+
+//Use UseAuthorization
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapControllerRoute("DefaultApi", "{controller=values}/v{version=apiVersion}/{id?}");
 
 app.Run();
 

@@ -1,4 +1,6 @@
-﻿using rwaspnet5.Model;
+﻿using rwaspnet5.Data.Converter;
+using rwaspnet5.Data.VO;
+using rwaspnet5.Model;
 using rwaspnet5.Repository;
 
 namespace rwaspnet5.Business.Implementations
@@ -6,31 +8,36 @@ namespace rwaspnet5.Business.Implementations
     public class BookBusinessImplementation : IBookBusiness
     {
         private readonly IRepository<Book> _repository;
+        private readonly BookConverter _converter;
 
         public BookBusinessImplementation(IRepository<Book> repository)
         {
             _repository = repository;
+            _converter = new BookConverter();
         }
 
-        public List<Book> FindAll()
+        public List<BookVO> FindAll()
         {
-            return _repository.FindAll();
+            return _converter.Parse(_repository.FindAll());
         }
 
-        public Book FindByID(long id)
+        public BookVO FindByID(long id)
         {
-            return _repository.FindByID(id);
+            return _converter.Parse(_repository.FindByID(id));
         }
 
-        public Book Create(Book Book)
+        public BookVO Create(BookVO book)
         {
-            return _repository.Create(Book);
+            var bookEntity = _converter.Parse(book);
+            bookEntity = _repository.Create(bookEntity);
+            return _converter.Parse(bookEntity);
         }
 
-        public Book Update(Book Book)
+        public BookVO Update(BookVO book)
         {
-
-            return _repository.Update(Book);
+            var bookEntity = _converter.Parse(book);
+            bookEntity = _repository.Update(bookEntity);
+            return _converter.Parse(bookEntity);
         }
 
         public void Delete(long id)

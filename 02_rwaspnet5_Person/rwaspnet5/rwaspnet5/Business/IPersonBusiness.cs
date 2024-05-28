@@ -1,13 +1,13 @@
-﻿using rwaspnet5.Model;
+﻿using rwaspnet5.Data.VO;
 
 namespace rwaspnet5.Business
 {
     public interface IPersonBusiness
     {
-        Person Create(Person person);
-        Person FindByID(long id);
-        List<Person> FindAll();
-        Person Update(Person person);
+        PersonVO Create(PersonVO person);
+        PersonVO FindByID(long id);
+        List<PersonVO> FindAll();
+        PersonVO Update(PersonVO person);
         void Delete(long id);
     }
 }
