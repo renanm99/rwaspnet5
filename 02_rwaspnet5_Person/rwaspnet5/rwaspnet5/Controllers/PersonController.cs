@@ -22,22 +22,33 @@ namespace rwaspnet5.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(List<PersonVO>))]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Get()
         {
             return Ok(_personBusiness.FindAll());
-        } 
+        }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(200, Type = typeof(PersonVO))]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Get(long id)
         {
             var person = _personBusiness.FindByID(id);
-            if(person == null) return NotFound();
+            if (person == null) return NotFound();
             return Ok(person);
         }
 
         [HttpPost]
+        [ProducesResponseType(200, Type = typeof(PersonVO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Create([FromBody] PersonVO person)
         {
@@ -47,6 +58,9 @@ namespace rwaspnet5.Controllers
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(200, Type = typeof(PersonVO))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Update([FromBody] PersonVO person)
         {
@@ -56,6 +70,9 @@ namespace rwaspnet5.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public IActionResult Delete(long id)
         {
             _personBusiness.Delete(id);

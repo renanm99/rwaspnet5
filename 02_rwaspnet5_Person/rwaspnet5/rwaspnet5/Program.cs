@@ -14,6 +14,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Rewrite;
 
 var builder = WebApplication.CreateBuilder(args);
+var appName = "REST API's from 0 to Azure with ASP.NET Core 8 and Docker";
+var appVersion = "v1";
+var appDescription = $" API RESTFul developed in course -> '{appName}'";
+
+
+// Add CORS
+builder.Services.AddCors(options => options.AddDefaultPolicy(builder =>
+{
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+}));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -46,14 +56,16 @@ builder.Services.AddSingleton(filterOptions);
 builder.Services.AddApiVersioning();
 
 //Swagger
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1",
     new OpenApiInfo
     {
-        Title = "REST API's from 0 to Azure with ASP.NET Core 5 and Docker",
-        Version = "v1",
-        Description = "API RESTFul developed in course 'rwaspnet5'",
+        Title = appName,
+        Version = appVersion,
+        Description = appDescription,
         Contact = new OpenApiContact
         {
             Name = "Renan Machado",
@@ -75,13 +87,16 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
+app.UseRouting();
+
+// Use CORS
+app.UseCors();
 
 //Use Swagger
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json"
-    , "REST API's from 0 to Azure with ASP.NET Core 5 and Docker");
+    c.SwaggerEndpoint($"/swagger/{appVersion}/swagger.json", $"{appName} - {appVersion}");
 });
 
 var option = new RewriteOptions();
